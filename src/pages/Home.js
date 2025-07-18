@@ -12,9 +12,14 @@ import { motion } from 'framer-motion';
 
 export default function Home() {
   const [blogs, setBlogs] = useState([]);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   useEffect(() => {
     fetchBlogs();
+
+    // Check if user is logged in
+    const token = localStorage.getItem('token');
+    setIsLoggedIn(!!token);
   }, []);
 
   const fetchBlogs = async () => {
@@ -47,11 +52,19 @@ export default function Home() {
         <Container>
           <h1 className="fw-bold display-5 display-md-4">Welcome to Blogify</h1>
           <p className="lead">Discover stories, insights, and expertise from writers on any topic.</p>
-          <Link to="/blogs/create">
-            <Button variant="light" size="lg" className="mt-3">
-              Start Writing
-            </Button>
-          </Link>
+          {isLoggedIn ? (
+            <Link to="/blogs/create">
+              <Button variant="light" size="lg" className="mt-3">
+                Start Writing
+              </Button>
+            </Link>
+          ) : (
+            <Link to="/login">
+              <Button variant="light" size="lg" className="mt-3">
+                Start Writing
+              </Button>
+            </Link>
+          )}
         </Container>
       </motion.div>
 
