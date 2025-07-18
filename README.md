@@ -63,6 +63,7 @@ For styling, I went with **Bootstrap** to keep things clean and responsive. Blog
 I deployed the frontend on [Vercel](https://blogify-sigma-seven.vercel.app/) and the backend on [Render](https://blogifyapi-ueu8.onrender.com), with MongoDB hosted on **MongoDB Atlas**. Environment variables are managed securely, and the app is live and accessible from anywhere.
 
 ---
+
 📁 Folder Structure
 src/
 │
