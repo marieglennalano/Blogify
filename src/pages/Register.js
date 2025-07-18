@@ -33,19 +33,21 @@ export default function Register() {
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    try {
-      const res = await axios.post('/users/register', form);
-      localStorage.setItem('token', res.data.token);
-      localStorage.removeItem('avatar');
-      navigate('/');
-    } catch (err) {
-      setError(err?.response?.data?.message || 'Registration failed.');
-    } finally {
-      setLoading(false);
-    }
-  };
+  e.preventDefault();
+  setLoading(true);
+  try {
+    const res = await axios.post('/users/register', form);
+
+    // ✅ Do not auto-login
+    alert('Registration successful! Please log in.');
+    navigate('/login');
+
+  } catch (err) {
+    setError(err?.response?.data?.message || 'Registration failed.');
+  } finally {
+    setLoading(false);
+  }
+};
 
   const handleGoogleSuccess = async (credentialResponse) => {
     try {
