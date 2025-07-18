@@ -32,7 +32,7 @@ export default function Login() {
     try {
       const res = await axios.post('/users/login', form);
       localStorage.setItem('token', res.data.token);
-      localStorage.removeItem('avatar'); // Clear Google avatar if any
+      localStorage.removeItem('avatar');
       navigate('/');
     } catch (err) {
       setError(err?.response?.data?.message || 'Login failed.');
@@ -65,14 +65,14 @@ export default function Login() {
     <div style={{ minHeight: '100vh', background: '#f8f9fa' }}>
       <Container className="py-5">
         <Row className="justify-content-center">
-          <Col md={8} lg={6}>
+          <Col xs={12} sm={10} md={8} lg={6}>
             <motion.div
               initial={{ opacity: 0, y: 40 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6 }}
             >
-              <Card className="shadow-sm">
-                <Card.Body>
+              <Card className="shadow-sm border-0">
+                <Card.Body className="px-3 px-md-4">
                   <h2 className="text-center mb-4">Welcome Back</h2>
 
                   {error && (
@@ -111,6 +111,7 @@ export default function Login() {
                           <Button
                             variant="outline-secondary"
                             onClick={() => setShowPassword(!showPassword)}
+                            tabIndex={-1}
                           >
                             {showPassword ? 'Hide' : 'Show'}
                           </Button>
@@ -121,7 +122,7 @@ export default function Login() {
                     <Button
                       type="submit"
                       variant="primary"
-                      className="w-100"
+                      className="w-100 mb-3"
                       as={motion.button}
                       whileHover={{ scale: 1.03 }}
                       whileTap={{ scale: 0.98 }}
@@ -129,11 +130,7 @@ export default function Login() {
                     >
                       {loading ? (
                         <>
-                          <Spinner
-                            animation="border"
-                            size="sm"
-                            className="me-2"
-                          />
+                          <Spinner animation="border" size="sm" className="me-2" />
                           Logging in...
                         </>
                       ) : (
@@ -142,7 +139,7 @@ export default function Login() {
                     </Button>
                   </Form>
 
-                  <div className="text-center my-3">or</div>
+                  <div className="text-center text-muted mb-3">or</div>
 
                   <div className="d-flex justify-content-center mb-3">
                     <GoogleLogin
@@ -152,8 +149,11 @@ export default function Login() {
                     />
                   </div>
 
-                  <p className="text-center mt-3 mb-0">
-                    Don't have an account? <Link to="/register">Register here</Link>
+                  <p className="text-center mt-3 mb-0 small">
+                    Don't have an account?{' '}
+                    <Link to="/register" className="fw-semibold">
+                      Register here
+                    </Link>
                   </p>
                 </Card.Body>
               </Card>

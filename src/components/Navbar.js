@@ -1,14 +1,15 @@
-// src/components/NavigationBar.js
+import { useState, useEffect } from 'react';
 import { Navbar, Nav, Container, Button, Image } from 'react-bootstrap';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { jwtDecode } from 'jwt-decode';
-import { useEffect, useState } from 'react';
+
 
 export default function NavigationBar() {
   const navigate = useNavigate();
-  const token = localStorage.getItem('token');
+  const [expanded, setExpanded] = useState(false);
   const [userName, setUserName] = useState('');
   const [avatar, setAvatar] = useState('');
+  const token = localStorage.getItem('token');
 
   useEffect(() => {
     if (token) {
@@ -30,21 +31,38 @@ export default function NavigationBar() {
   const handleLogout = () => {
     localStorage.removeItem('token');
     localStorage.removeItem('avatar');
+    setExpanded(false);
     navigate('/login');
   };
 
+  // Closes menu after clicking any link
+  const closeMenu = () => setExpanded(false);
+
   return (
-    <Navbar bg="dark" variant="dark" expand="lg" className="shadow-sm mb-4">
+    <Navbar
+      bg="dark"
+      variant="dark"
+      expand="lg"
+      expanded={expanded}
+      onToggle={(value) => setExpanded(value)}
+      className="shadow-sm mb-4"
+    >
       <Container>
-        <Navbar.Brand as={Link} to="/">Blogify</Navbar.Brand>
+        <Navbar.Brand as={Link} to="/" onClick={closeMenu}>
+          Blogify
+        </Navbar.Brand>
         <Navbar.Toggle aria-controls="navbar-nav" />
         <Navbar.Collapse id="navbar-nav">
           <Nav className="ms-auto align-items-center gap-2">
-            <Nav.Link as={Link} to="/">Home</Nav.Link>
+            <Nav.Link as={Link} to="/" onClick={closeMenu}>
+              Home
+            </Nav.Link>
 
             {token ? (
               <>
-                <Nav.Link as={Link} to="/blogs/create">Create Blog</Nav.Link>
+                <Nav.Link as={Link} to="/blogs/create" onClick={closeMenu}>
+                  Create Blog
+                </Nav.Link>
                 <span className="navbar-text text-white me-2">
                   Welcome, {userName}!
                 </span>
@@ -67,8 +85,12 @@ export default function NavigationBar() {
               </>
             ) : (
               <>
-                <Nav.Link as={Link} to="/login">Login</Nav.Link>
-                <Nav.Link as={Link} to="/register">Register</Nav.Link>
+                <Nav.Link as={Link} to="/login" onClick={closeMenu}>
+                  Login
+                </Nav.Link>
+                <Nav.Link as={Link} to="/register" onClick={closeMenu}>
+                  Register
+                </Nav.Link>
               </>
             )}
           </Nav>

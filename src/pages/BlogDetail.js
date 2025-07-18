@@ -2,7 +2,15 @@ import { useEffect, useState } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import axios from '../api/axios';
 import { jwtDecode } from 'jwt-decode';
-import { Card, Button, Form, Container, Alert, Row, Col } from 'react-bootstrap';
+import {
+  Card,
+  Button,
+  Form,
+  Container,
+  Alert,
+  Row,
+  Col
+} from 'react-bootstrap';
 import { motion } from 'framer-motion';
 
 export default function BlogDetail() {
@@ -53,11 +61,15 @@ export default function BlogDetail() {
   const handleCommentSubmit = async (e) => {
     e.preventDefault();
     try {
-      await axios.post(`/comments/add/${id}`, { comment: text }, {
-        headers: {
-          Authorization: `Bearer ${token}`
+      await axios.post(
+        `/comments/add/${id}`,
+        { comment: text },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
         }
-      });
+      );
       setText('');
       setError('');
       fetchComments();
@@ -69,7 +81,6 @@ export default function BlogDetail() {
 
   const handleDelete = async () => {
     if (!window.confirm('Are you sure you want to delete this blog post?')) return;
-
     try {
       await axios.delete(`/blogs/remove/${blog._id}`, {
         headers: {
@@ -87,7 +98,7 @@ export default function BlogDetail() {
   const blogAuthorId = blog.authorId || blog.author?._id;
 
   return (
-    <Container className="my-5">
+    <Container className="my-4">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -95,22 +106,19 @@ export default function BlogDetail() {
       >
         <Card className="shadow-sm border-0 mb-4">
           <Card.Body>
-            <Card.Title as="h2">{blog.title}</Card.Title>
+            <Card.Title as="h2" className="fw-bold">{blog.title}</Card.Title>
             <Card.Subtitle className="mb-3 text-muted">
-              By {blog.author?.firstName || 'Unknown'}{' '}
-              {blog.author?.lastName || ''} &bull;{' '}
+              By {blog.author?.firstName || 'Unknown'} {blog.author?.lastName || ''} &bull;{' '}
               {new Date(blog.createdAt).toLocaleDateString()}
             </Card.Subtitle>
-            <Card.Text>{blog.content}</Card.Text>
+            <Card.Text style={{ whiteSpace: 'pre-wrap' }}>{blog.content}</Card.Text>
 
             {(tokenUserId === blogAuthorId || isAdmin) && (
-              <div className="d-flex gap-2 mt-3">
+              <div className="d-flex flex-wrap gap-2 mt-4">
                 <Link to={`/blogs/edit/${blog._id}`}>
-                  <Button variant="outline-primary">Edit</Button>
+                  <Button variant="outline-primary" size="sm">Edit</Button>
                 </Link>
-                <Button variant="danger" onClick={handleDelete}>
-                  Delete
-                </Button>
+                <Button variant="danger" size="sm" onClick={handleDelete}>Delete</Button>
               </div>
             )}
           </Card.Body>
@@ -120,7 +128,7 @@ export default function BlogDetail() {
       <h4 className="mb-4">💬 Comments</h4>
 
       {comments.length === 0 ? (
-        <p className="text-muted">No comments yet.</p>
+        <p className="text-muted">No comments yet. Be the first to comment!</p>
       ) : (
         comments.map((comment) => (
           <motion.div
@@ -130,23 +138,25 @@ export default function BlogDetail() {
             transition={{ duration: 0.3 }}
           >
             <Card className="mb-3 border-0 shadow-sm">
-              <Card.Body className="d-flex gap-3 align-items-start">
-                <img
-                  src={`https://ui-avatars.com/api/?name=${comment.user?.firstName || 'A'}&background=0D8ABC&color=fff`}
-                  alt="avatar"
-                  width={48}
-                  height={48}
-                  className="rounded-circle"
-                />
-                <div>
-                  <Card.Text>{comment.comment}</Card.Text>
-                  <Card.Footer className="text-muted bg-transparent border-0 p-0 mt-1">
-                    <small>
-                      — {comment.user?.firstName || 'Anonymous'}{' '}
-                      {comment.user?.lastName || ''}
-                    </small>
-                  </Card.Footer>
-                </div>
+              <Card.Body>
+                <Row className="g-2">
+                  <Col xs="auto">
+                    <img
+                      src={`https://ui-avatars.com/api/?name=${comment.user?.firstName || 'A'}&background=0D8ABC&color=fff`}
+                      alt="avatar"
+                      width={48}
+                      height={48}
+                      className="rounded-circle"
+                      style={{ objectFit: 'cover' }}
+                    />
+                  </Col>
+                  <Col>
+                    <Card.Text>{comment.comment}</Card.Text>
+                    <div className="text-muted small mt-1">
+                      — {comment.user?.firstName || 'Anonymous'} {comment.user?.lastName || ''}
+                    </div>
+                  </Col>
+                </Row>
               </Card.Body>
             </Card>
           </motion.div>

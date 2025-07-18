@@ -38,7 +38,7 @@ export default function Register() {
     try {
       const res = await axios.post('/users/register', form);
       localStorage.setItem('token', res.data.token);
-      localStorage.removeItem('avatar'); // remove any previous Google pic
+      localStorage.removeItem('avatar');
       navigate('/');
     } catch (err) {
       setError(err?.response?.data?.message || 'Registration failed.');
@@ -72,14 +72,14 @@ export default function Register() {
     <div style={{ minHeight: '100vh', background: '#f8f9fa' }}>
       <Container className="py-5">
         <Row className="justify-content-center">
-          <Col md={8} lg={6}>
+          <Col xs={12} sm={10} md={8} lg={6}>
             <motion.div
               initial={{ opacity: 0, y: 40 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6 }}
             >
-              <Card className="shadow-sm">
-                <Card.Body>
+              <Card className="shadow-sm border-0">
+                <Card.Body className="px-3 px-md-4">
                   <h2 className="text-center mb-4">Create an Account</h2>
 
                   {error && (
@@ -94,7 +94,7 @@ export default function Register() {
 
                   <Form onSubmit={handleSubmit}>
                     <Row>
-                      <Col>
+                      <Col xs={12} md={6}>
                         <Form.Group className="mb-3" controlId="firstName">
                           <Form.Label>First Name</Form.Label>
                           <Form.Control
@@ -106,7 +106,7 @@ export default function Register() {
                           />
                         </Form.Group>
                       </Col>
-                      <Col>
+                      <Col xs={12} md={6}>
                         <Form.Group className="mb-3" controlId="lastName">
                           <Form.Label>Last Name</Form.Label>
                           <Form.Control
@@ -132,7 +132,7 @@ export default function Register() {
                     </Form.Group>
 
                     <Form.Group className="mb-3" controlId="mobileNo">
-                      <Form.Label>Mobile No</Form.Label>
+                      <Form.Label>Mobile Number</Form.Label>
                       <Form.Control
                         type="text"
                         name="mobileNo"
@@ -156,6 +156,7 @@ export default function Register() {
                           <Button
                             variant="outline-secondary"
                             onClick={() => setShowPassword(!showPassword)}
+                            tabIndex={-1}
                           >
                             {showPassword ? 'Hide' : 'Show'}
                           </Button>
@@ -166,7 +167,7 @@ export default function Register() {
                     <Button
                       type="submit"
                       variant="success"
-                      className="w-100"
+                      className="w-100 mb-3"
                       as={motion.button}
                       whileHover={{ scale: 1.03 }}
                       whileTap={{ scale: 0.98 }}
@@ -183,7 +184,7 @@ export default function Register() {
                     </Button>
                   </Form>
 
-                  <div className="text-center my-3">or</div>
+                  <div className="text-center text-muted mb-3">or</div>
 
                   <div className="d-flex justify-content-center mb-3">
                     <GoogleLogin
@@ -193,9 +194,11 @@ export default function Register() {
                     />
                   </div>
 
-                  <p className="text-center mt-3 mb-0">
+                  <p className="text-center mt-3 mb-0 small">
                     Already have an account?{' '}
-                    <Link to="/login">Log in here</Link>
+                    <Link to="/login" className="fw-semibold">
+                      Log in here
+                    </Link>
                   </p>
                 </Card.Body>
               </Card>
