@@ -1,6 +1,5 @@
 ## 🛠️ Building Blogify: My Journey with the MERN Stack
 
-**Date:** July 17, 2025  
 **Author:** Marie Glenn Alano
 
 ---
@@ -22,19 +21,32 @@ I used `create-react-app` to kickstart the frontend and set up a basic Express s
 
 ---
 
-### 🔐 Authentication & User Management
+## 🚀 Features
 
-One of the first challenges was implementing **user authentication**. I chose **JWT (JSON Web Tokens)** for secure login sessions. Users can register, log in, and manage their own posts. Passwords are hashed using `bcrypt`, and tokens are stored securely.
+- ✅ Responsive UI with React Bootstrap
+- ✅ Login and Registration with validation
+- ✅ Google OAuth login (optional)
+- ✅ Create, Edit, View, Delete blog posts
+- ✅ Comment system with threaded replies
+- ✅ Like functionality for blogs and comments
+- ✅ Animations using Framer Motion
+- ✅ Protected routes for authenticated users
+- ✅ Avatar support via Google or UI Avatars
+- ✅ Toast & Alert-based feedback
+- ✅ Clean and elegant UI
 
 ---
 
-### ✍️ Creating & Managing Posts
+## 🛠️ Technologies Used
 
-I designed a simple **Post schema** in MongoDB with fields like title, content, author, and timestamps. The frontend includes:
-
-- A **rich text editor** for writing posts
-- A **dashboard** to manage published content
-- A **public feed** to browse all posts
+- React (CRA)
+- React Bootstrap
+- Axios
+- React Router
+- Framer Motion
+- Google OAuth (`@react-oauth/google`)
+- JWT Authentication
+- UI Avatars
 
 CRUD operations are handled via RESTful API endpoints, and everything is connected seamlessly using Axios.
 
@@ -42,31 +54,39 @@ CRUD operations are handled via RESTful API endpoints, and everything is connect
 
 ### 🎨 Styling the UI
 
-For styling, I went with **Tailwind CSS** to keep things clean and responsive. Blogify has a minimalist aesthetic, focusing on readability and user experience. I also added dark mode support for those late-night writing sessions.
+For styling, I went with **Bootstrap** to keep things clean and responsive. Blogify has a minimalist aesthetic, focusing on readability and user experience. I also added dark mode support for those late-night writing sessions.
 
 ---
 
 ### 🌐 Deployment
 
-I deployed the frontend on **Vercel** and the backend on **Render**, with MongoDB hosted on **MongoDB Atlas**. Environment variables are managed securely, and the app is live and accessible from anywhere.
+I deployed the frontend on [Vercel](https://blogify-sigma-seven.vercel.app/) and the backend on [Render](https://blogifyapi-ueu8.onrender.com), with MongoDB hosted on **MongoDB Atlas**. Environment variables are managed securely, and the app is live and accessible from anywhere.
+
+---
+📁 Folder Structure
+src/
+│
+├── api/             # Axios instance
+├── components/      # Navbar, buttons, etc.
+├── pages/           # Login, Register, Home, Blog Detail, Create Blog
+├── App.js           # Main routing logic
+└── index.js         # App entry point
 
 ---
 
-### 💡 Lessons Learned
-
-- **Modularity is key**: Keeping components and routes organized made scaling easier.
-- **Security matters**: Even in small projects, protecting user data is crucial.
-- **Keep iterating**: Blogify is still evolving, and I’m excited to add features like comments, tags, and image uploads.
+🔐 Authentication
+JWT-based login system
+Google Sign-In (optional)
+Tokens stored in localStorage
 
 ---
 
-### 📌 What’s Next?
+💬 Feedback
+Found a bug or have a feature request? Feel free to open an issue or contribute!
 
-I plan to add:
-
-- **User profiles**
-- **Post categories and tags**
-- **Commenting system**
-- **Admin dashboard**
-
+---
 Blogify is more than just a project—it’s a platform for expression, learning, and growth. If you're building something similar or want to collaborate, feel free to reach out!
+
+---
+
+Made with ❤️ by [Marie Glenn Alano](https://github.com/marieglennalano)
