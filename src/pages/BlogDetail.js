@@ -95,6 +95,22 @@ export default function BlogDetail() {
     }
   };
 
+  const handleDeleteComment = async (commentId) => {
+  if (!window.confirm('Are you sure you want to delete this comment?')) return;
+
+  try {
+    await axios.delete(`/comments/delete/${commentId}`, {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    });
+    fetchComments(); // Refresh comments after deletion
+  } catch (err) {
+    console.error('Failed to delete comment:', err?.response?.data);
+    alert(err?.response?.data?.message || 'Failed to delete comment.');
+  }
+};
+
   const blogAuthorId = blog.authorId || blog.author?._id;
 
   return (
@@ -139,7 +155,7 @@ export default function BlogDetail() {
           >
             <Card className="mb-3 border-0 shadow-sm">
               <Card.Body>
-                <Row className="g-2">
+                <Row className="g-2 align-items-center">
                   <Col xs="auto">
                     <img
                       src={`https://ui-avatars.com/api/?name=${comment.user?.firstName || 'A'}&background=0D8ABC&color=fff`}
@@ -151,7 +167,18 @@ export default function BlogDetail() {
                     />
                   </Col>
                   <Col>
-                    <Card.Text>{comment.comment}</Card.Text>
+                    <div className="d-flex justify-content-between align-items-center">
+                      <Card.Text className="mb-0">{comment.comment}</Card.Text>
+                      {isAdmin && (
+                        <Button
+                          variant="outline-danger"
+                          size="sm"
+                          onClick={() => handleDeleteComment(comment._id)}
+                        >
+                          Delete
+                        </Button>
+                      )}
+                    </div>
                     <div className="text-muted small mt-1">
                       — {comment.user?.firstName || 'Anonymous'} {comment.user?.lastName || ''}
                     </div>

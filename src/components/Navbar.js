@@ -3,12 +3,12 @@ import { Navbar, Nav, Container, Button, Image } from 'react-bootstrap';
 import { useNavigate, Link } from 'react-router-dom';
 import { jwtDecode } from 'jwt-decode';
 
-
 export default function NavigationBar() {
   const navigate = useNavigate();
   const [expanded, setExpanded] = useState(false);
   const [userName, setUserName] = useState('');
   const [avatar, setAvatar] = useState('');
+  const [isAdmin, setIsAdmin] = useState(false);
   const token = localStorage.getItem('token');
 
   useEffect(() => {
@@ -17,6 +17,7 @@ export default function NavigationBar() {
         const decoded = jwtDecode(token);
         const nameFromEmail = decoded.email.split('@')[0];
         setUserName(decoded.firstName || nameFromEmail);
+        setIsAdmin(decoded.isAdmin || false);
       } catch (err) {
         console.error('Invalid token');
       }
@@ -35,7 +36,6 @@ export default function NavigationBar() {
     navigate('/login');
   };
 
-  // Closes menu after clicking any link
   const closeMenu = () => setExpanded(false);
 
   return (
@@ -63,6 +63,13 @@ export default function NavigationBar() {
                 <Nav.Link as={Link} to="/blogs/create" onClick={closeMenu}>
                   Create Blog
                 </Nav.Link>
+
+                {isAdmin && (
+                  <Nav.Link as={Link} to="/admin/dashboard" onClick={closeMenu}>
+                    Admin Dashboard
+                  </Nav.Link>
+                )}
+
                 <span className="navbar-text text-white me-2">
                   Welcome, {userName}!
                 </span>

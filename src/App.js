@@ -6,6 +6,7 @@ import BlogDetail from './pages/BlogDetail';
 import NavigationBar from './components/Navbar';
 import BlogForm from './pages/BlogForm';
 import Footer from './components/Footer';
+import AdminDashboard from './pages/AdminDashboard';
 
 function App() {
   return (
@@ -21,6 +22,7 @@ function App() {
             <Route path="/blogs/create" element={<BlogForm />} />
             <Route path="/blogs/edit/:id" element={<BlogForm />} />
             <Route path="/blogs/:id" element={<BlogDetail />} />
+            <Route path="/admin/dashboard" element={<AdminDashboard />} />
           </Routes>
         </div>
 
