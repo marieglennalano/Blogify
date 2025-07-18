@@ -1,3 +1,4 @@
+// src/components/NavigationBar.js
 import { Navbar, Nav, Container, Button, Image } from 'react-bootstrap';
 import { Link, useNavigate } from 'react-router-dom';
 import { jwtDecode } from 'jwt-decode';
@@ -20,7 +21,6 @@ export default function NavigationBar() {
       }
     }
 
-    // Check if avatar exists (from Google login)
     const storedAvatar = localStorage.getItem('avatar');
     if (storedAvatar) {
       setAvatar(storedAvatar);

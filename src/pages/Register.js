@@ -9,21 +9,24 @@ import {
   Alert,
   Row,
   Col,
+  Spinner,
+  InputGroup
 } from 'react-bootstrap';
+import { motion } from 'framer-motion';
+import { GoogleLogin } from '@react-oauth/google';
 
 export default function Register() {
   const navigate = useNavigate();
-
   const [form, setForm] = useState({
     firstName: '',
     lastName: '',
     email: '',
-    password: '',
-    confirmPassword: ''
+    mobileNo: '',
+    password: ''
   });
-
   const [error, setError] = useState('');
-  const [success, setSuccess] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -31,107 +34,175 @@ export default function Register() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    if (form.password !== form.confirmPassword) {
-      return setError('Passwords do not match.');
-    }
-
+    setLoading(true);
     try {
-      await axios.post('/users/register', form);
-      setSuccess('Registration successful! Redirecting to login...');
-      setError('');
-      setTimeout(() => navigate('/login'), 1500);
+      const res = await axios.post('/users/register', form);
+      localStorage.setItem('token', res.data.token);
+      localStorage.removeItem('avatar'); // remove any previous Google pic
+      navigate('/');
     } catch (err) {
       setError(err?.response?.data?.message || 'Registration failed.');
-      setSuccess('');
+    } finally {
+      setLoading(false);
     }
   };
 
+  const handleGoogleSuccess = async (credentialResponse) => {
+    try {
+      const res = await axios.post('/users/google-login', {
+        token: credentialResponse.credential,
+      });
+
+      localStorage.setItem('token', res.data.token);
+      if (res.data.avatar) {
+        localStorage.setItem('avatar', res.data.avatar);
+      }
+      navigate('/');
+    } catch (err) {
+      console.error(err);
+      setError('Google sign-up failed.');
+    }
+  };
+
+  const handleGoogleError = () => {
+    setError('Google sign-up failed. Try again.');
+  };
+
   return (
-    <Container className="py-5">
-      <Row className="justify-content-center">
-        <Col md={8} lg={6}>
-          <Card className="shadow-sm">
-            <Card.Body>
-              <h2 className="text-center mb-4">Create an Account</h2>
+    <div style={{ minHeight: '100vh', background: '#f8f9fa' }}>
+      <Container className="py-5">
+        <Row className="justify-content-center">
+          <Col md={8} lg={6}>
+            <motion.div
+              initial={{ opacity: 0, y: 40 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6 }}
+            >
+              <Card className="shadow-sm">
+                <Card.Body>
+                  <h2 className="text-center mb-4">Create an Account</h2>
 
-              {error && <Alert variant="danger">{error}</Alert>}
-              {success && <Alert variant="success">{success}</Alert>}
+                  {error && (
+                    <motion.div
+                      initial={{ opacity: 0, y: -10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.3 }}
+                    >
+                      <Alert variant="danger">{error}</Alert>
+                    </motion.div>
+                  )}
 
-              <Form onSubmit={handleSubmit}>
-                <Row>
-                  <Col>
-                    <Form.Group className="mb-3" controlId="firstName">
-                      <Form.Label>First Name</Form.Label>
+                  <Form onSubmit={handleSubmit}>
+                    <Row>
+                      <Col>
+                        <Form.Group className="mb-3" controlId="firstName">
+                          <Form.Label>First Name</Form.Label>
+                          <Form.Control
+                            type="text"
+                            name="firstName"
+                            value={form.firstName}
+                            onChange={handleChange}
+                            required
+                          />
+                        </Form.Group>
+                      </Col>
+                      <Col>
+                        <Form.Group className="mb-3" controlId="lastName">
+                          <Form.Label>Last Name</Form.Label>
+                          <Form.Control
+                            type="text"
+                            name="lastName"
+                            value={form.lastName}
+                            onChange={handleChange}
+                            required
+                          />
+                        </Form.Group>
+                      </Col>
+                    </Row>
+
+                    <Form.Group className="mb-3" controlId="email">
+                      <Form.Label>Email</Form.Label>
                       <Form.Control
-                        type="text"
-                        name="firstName"
-                        value={form.firstName}
+                        type="email"
+                        name="email"
+                        value={form.email}
                         onChange={handleChange}
                         required
                       />
                     </Form.Group>
-                  </Col>
-                  <Col>
-                    <Form.Group className="mb-3" controlId="lastName">
-                      <Form.Label>Last Name</Form.Label>
+
+                    <Form.Group className="mb-3" controlId="mobileNo">
+                      <Form.Label>Mobile No</Form.Label>
                       <Form.Control
                         type="text"
-                        name="lastName"
-                        value={form.lastName}
+                        name="mobileNo"
+                        value={form.mobileNo}
                         onChange={handleChange}
                         required
                       />
                     </Form.Group>
-                  </Col>
-                </Row>
 
-                <Form.Group className="mb-3" controlId="email">
-                  <Form.Label>Email Address</Form.Label>
-                  <Form.Control
-                    type="email"
-                    name="email"
-                    value={form.email}
-                    onChange={handleChange}
-                    required
-                  />
-                </Form.Group>
+                    <Form.Group className="mb-3" controlId="password">
+                      <Form.Label>Password</Form.Label>
+                      <InputGroup>
+                        <Form.Control
+                          type={showPassword ? 'text' : 'password'}
+                          name="password"
+                          value={form.password}
+                          onChange={handleChange}
+                          required
+                        />
+                        {form.password.length > 0 && (
+                          <Button
+                            variant="outline-secondary"
+                            onClick={() => setShowPassword(!showPassword)}
+                          >
+                            {showPassword ? 'Hide' : 'Show'}
+                          </Button>
+                        )}
+                      </InputGroup>
+                    </Form.Group>
 
-                <Form.Group className="mb-3" controlId="password">
-                  <Form.Label>Password</Form.Label>
-                  <Form.Control
-                    type="password"
-                    name="password"
-                    value={form.password}
-                    onChange={handleChange}
-                    required
-                  />
-                </Form.Group>
+                    <Button
+                      type="submit"
+                      variant="success"
+                      className="w-100"
+                      as={motion.button}
+                      whileHover={{ scale: 1.03 }}
+                      whileTap={{ scale: 0.98 }}
+                      disabled={loading}
+                    >
+                      {loading ? (
+                        <>
+                          <Spinner animation="border" size="sm" className="me-2" />
+                          Registering...
+                        </>
+                      ) : (
+                        'Register'
+                      )}
+                    </Button>
+                  </Form>
 
-                <Form.Group className="mb-3" controlId="confirmPassword">
-                  <Form.Label>Confirm Password</Form.Label>
-                  <Form.Control
-                    type="password"
-                    name="confirmPassword"
-                    value={form.confirmPassword}
-                    onChange={handleChange}
-                    required
-                  />
-                </Form.Group>
+                  <div className="text-center my-3">or</div>
 
-                <Button type="submit" variant="primary" className="w-100">
-                  Register
-                </Button>
-              </Form>
+                  <div className="d-flex justify-content-center mb-3">
+                    <GoogleLogin
+                      onSuccess={handleGoogleSuccess}
+                      onError={handleGoogleError}
+                      width="100%"
+                    />
+                  </div>
 
-              <p className="text-center mt-3 mb-0">
-                Already have an account?{' '}
-                <Link to="/login">Log in here</Link>
-              </p>
-            </Card.Body>
-          </Card>
-        </Col>
-      </Row>
-    </Container>
+                  <p className="text-center mt-3 mb-0">
+                    Already have an account?{' '}
+                    <Link to="/login">Log in here</Link>
+                  </p>
+                </Card.Body>
+              </Card>
+            </motion.div>
+          </Col>
+        </Row>
+      </Container>
+    </div>
   );
 }
