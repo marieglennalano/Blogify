@@ -1,66 +1,49 @@
 // src/pages/AdminDashboard.js
 import { useEffect, useState } from 'react';
-import { Container, Row, Col, Card, Table, Button } from 'react-bootstrap';
+import { Container, Row, Col, Card, Button, Table } from 'react-bootstrap';
 import { motion } from 'framer-motion';
 import axios from '../api/axios';
 
 export default function AdminDashboard() {
-  const [blogCount, setBlogCount] = useState(0);
-  const [userCount, setUserCount] = useState(0);
-  const [commentCount, setCommentCount] = useState(0);
-  const [recentBlogs, setRecentBlogs] = useState([]);
+  const [blogs, setBlogs] = useState([]);
+  const [users, setUsers] = useState([]);
+  const [comments, setComments] = useState([]);
 
   useEffect(() => {
-    fetchDashboardData();
+    fetchData();
   }, []);
 
-  const fetchDashboardData = async () => {
+  const fetchData = async () => {
     try {
       const token = localStorage.getItem('token');
       const config = { headers: { Authorization: `Bearer ${token}` } };
 
-      const [blogsCountRes, usersCountRes, commentsCountRes, recentBlogsRes] = await Promise.all([
-        axios.get('/admin/blogs/count', config),
-        axios.get('/admin/users/count', config),
-        axios.get('/admin/comments/count', config),
-        axios.get('/admin/blogs/recent', config)
+      const [blogsRes, usersRes, commentsRes] = await Promise.all([
+        axios.get('/blogs/all', config),
+        axios.get('/users/all', config),
+        axios.get('/comments/all', config)
       ]);
 
-      setBlogCount(blogsCountRes.data.count);
-      setUserCount(usersCountRes.data.count);
-      setCommentCount(commentsCountRes.data.count);
-      setRecentBlogs(recentBlogsRes.data);
+      setBlogs(blogsRes.data);
+      setUsers(usersRes.data);
+      setComments(commentsRes.data);
     } catch (err) {
-      console.error('Failed to fetch admin data:', err);
-    }
-  };
-
-  const handleDeleteBlog = async (id) => {
-    const confirmed = window.confirm('Are you sure you want to delete this blog?');
-    if (!confirmed) return;
-
-    try {
-      const token = localStorage.getItem('token');
-      const config = { headers: { Authorization: `Bearer ${token}` } };
-      await axios.delete(`/blogs/remove/${id}`, config);
-      setRecentBlogs(prev => prev.filter(blog => blog._id !== id));
-      setBlogCount(prev => prev - 1);
-    } catch (err) {
-      console.error('Delete error:', err);
-      alert('Failed to delete blog.');
+      console.error('Failed to load dashboard data:', err);
     }
   };
 
   return (
     <Container className="py-4">
-      <motion.h2 initial={{ opacity: 0 }} animate={{ opacity: 1 }}>Admin Dashboard</motion.h2>
+      <motion.h2 initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+        Admin Dashboard
+      </motion.h2>
 
-      <Row className="mb-4 mt-3">
+      <Row className="mb-4">
         <Col md={4}>
           <Card bg="primary" text="white">
             <Card.Body>
               <Card.Title>Total Blogs</Card.Title>
-              <h3>{blogCount}</h3>
+              <h3>{blogs.length}</h3>
             </Card.Body>
           </Card>
         </Col>
@@ -68,7 +51,7 @@ export default function AdminDashboard() {
           <Card bg="success" text="white">
             <Card.Body>
               <Card.Title>Total Users</Card.Title>
-              <h3>{userCount}</h3>
+              <h3>{users.length}</h3>
             </Card.Body>
           </Card>
         </Col>
@@ -76,47 +59,41 @@ export default function AdminDashboard() {
           <Card bg="danger" text="white">
             <Card.Body>
               <Card.Title>Total Comments</Card.Title>
-              <h3>{commentCount}</h3>
+              <h3>{comments.length}</h3>
             </Card.Body>
           </Card>
         </Col>
       </Row>
 
-      <h4 className="mb-3">📋 Recent Blogs</h4>
-      <Table striped bordered hover responsive size="sm">
-        <thead>
-          <tr>
-            <th>Title</th>
-            <th>Author</th>
-            <th>Created</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {recentBlogs.length === 0 ? (
-            <tr>
-              <td colSpan="4" className="text-center">No recent blogs found.</td>
-            </tr>
-          ) : (
-            recentBlogs.map(blog => (
-              <tr key={blog._id}>
-                <td>{blog.title}</td>
-                <td>{blog.author?.firstName} {blog.author?.lastName}</td>
-                <td>{new Date(blog.createdAt).toLocaleDateString()}</td>
-                <td>
-                  <Button
-                    variant="outline-danger"
-                    size="sm"
-                    onClick={() => handleDeleteBlog(blog._id)}
-                  >
-                    Delete
-                  </Button>
-                </td>
+      <Row>
+        <Col md={12}>
+          <h4>📋 Recent Blogs</h4>
+          <Table striped bordered hover size="sm">
+            <thead>
+              <tr>
+                <th>Title</th>
+                <th>Author</th>
+                <th>Created</th>
+                <th>Actions</th>
               </tr>
-            ))
-          )}
-        </tbody>
-      </Table>
+            </thead>
+            <tbody>
+              {blogs.slice(0, 5).map(blog => (
+                <tr key={blog._id}>
+                  <td>{blog.title}</td>
+                  <td>{blog.author?.firstName} {blog.author?.lastName}</td>
+                  <td>{new Date(blog.createdAt).toLocaleDateString()}</td>
+                  <td>
+                    <Button variant="outline-danger" size="sm">
+                      Delete
+                    </Button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </Table>
+        </Col>
+      </Row>
     </Container>
   );
 }
